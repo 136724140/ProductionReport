@@ -17,7 +17,7 @@ def get_date(data_0):
     return date_2
 
 
-class MyWindow(QMainWindow,  Ui_mainWindow):
+class MyWindow(QMainWindow, Ui_mainWindow):
     def __init__(self, parent=None):
         super(MyWindow, self).__init__(parent)
         self.setupUi(self)
@@ -33,15 +33,16 @@ class MyWindow(QMainWindow,  Ui_mainWindow):
 
     # 读取文件
     def reads(self):
-        file_name0 = QFileDialog.getOpenFileName(self, '选择读取文件',filter='EXCEL FILE(*.xlsx *.xls)')
+        file_name0 = QFileDialog.getOpenFileName(self, '选择读取文件', filter='EXCEL FILE(*.xlsx )')
         self.file_name = file_name0[0]
-        # 读取文件地址
-        path_s = self.file_name.split('/')
-        separator = '/'
-        self.path = separator.join(path_s[:-1])
-        # 判断文件合法性
-        suffix = path_s[-1].split(',')
-        self.readTabParams()
+        if self.file_name != '':
+            # 读取文件地址
+            path_s = self.file_name.split('/')
+            separator = '/'
+            self.path = separator.join(path_s[:-1])
+            # 判断文件合法性
+            suffix = path_s[-1].split(',')
+            self.readTabParams()
 
     def readTabParams(self):
         file_name = self.file_name
@@ -151,11 +152,11 @@ class MyWindow(QMainWindow,  Ui_mainWindow):
     # 输出数据
     def output(self, summat, date_get):
         name = self.path + '/' + str(date_get) + '报表.xlsx'
+        summat = summat.sort_values(by='装矿设备')
         wb = Workbook()
         ws = wb.active
         for r in dataframe_to_rows(summat, index=False, header=True):
             ws.append(r)
-        print(name)
         wb.save(name)
         self.label_2.setText('输出成功')
 
