@@ -1,11 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import pandas as pd
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QTableWidgetItem, QDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from main import *
 import sys
-from openpyxl import Workbook, cell
+from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
+
+
 def get_date(data_0):
     date_0 = data_0['日期']
     date_1 = date_0.dropna()
@@ -15,7 +17,7 @@ def get_date(data_0):
     return date_2
 
 
-class MyWindow(QMainWindow, Ui_MainWindow):
+class MyWindow(QMainWindow,  Ui_mainWindow):
     def __init__(self, parent=None):
         super(MyWindow, self).__init__(parent)
         self.setupUi(self)
@@ -27,13 +29,19 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.date_get = ''
         self.data = pd.DataFrame()
         self.date = []
+        self.path = ''
 
     # 读取文件
     def reads(self):
-        file_name0 = QFileDialog.getOpenFileName(self, '选择读取文件')
+        file_name0 = QFileDialog.getOpenFileName(self, '选择读取文件',filter='EXCEL FILE(*.xlsx *.xls)')
         self.file_name = file_name0[0]
+        # 读取文件地址
+        path_s = self.file_name.split('/')
+        separator = '/'
+        self.path = separator.join(path_s[:-1])
+        # 判断文件合法性
+        suffix = path_s[-1].split(',')
         self.readTabParams()
-        # 显示所选文件名
 
     def readTabParams(self):
         file_name = self.file_name
@@ -142,16 +150,14 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     # 输出数据
     def output(self, summat, date_get):
-        name = str(date_get) + '报表.xlsx'
+        name = self.path + '/' + str(date_get) + '报表.xlsx'
         wb = Workbook()
         ws = wb.active
-        value = summat.values.tolist()
-        tital = summat.columns.values
-        rows = len(value)
-        lines = len(value[0])
-        for r in dataframe_to_rows(summat,index=False,header=True):
+        for r in dataframe_to_rows(summat, index=False, header=True):
             ws.append(r)
+        print(name)
         wb.save(name)
+        self.label_2.setText('输出成功')
 
     def maintenance(self):
         file_name = self.file_name
