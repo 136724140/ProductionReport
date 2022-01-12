@@ -68,6 +68,7 @@ class MyWindow(QMainWindow, Ui_mainWindow):
         self.date = date_2
         self.comboBox_3.addItems(date_2)
 
+
     # 获取所选日期位置范围
     @staticmethod
     def location(data, date_list, date_get):
